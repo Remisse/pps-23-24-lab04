@@ -10,8 +10,7 @@ import u03.Optionals.Optional
    specific implementation
 */
 
-class Stacktest:
-
+class StackTest:
 
   val stack = StackImpl
 

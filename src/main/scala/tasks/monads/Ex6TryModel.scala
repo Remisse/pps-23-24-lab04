@@ -1,7 +1,6 @@
 package tasks.monads
 
 import u04.monads.Monads.Monad
-import u04.monads.Monads.Monad
 
 /**
   * Exercise 6: 
@@ -31,12 +30,14 @@ object Ex6TryModel:
       case TryImpl.Failure(_) => other
 
   given Monad[Try] with
-    override def unit[A](value: A): Try[A] = ???
+    override def unit[A](value: A): Try[A] = TryImpl.Success(value)
     extension [A](m: Try[A]) 
 
-      override def flatMap[B](f: A => Try[B]): Try[B] = ??? 
-      
-@main def main: Unit = 
+      override def flatMap[B](f: A => Try[B]): Try[B] = m match
+        case TryImpl.Success(a) => f(a)
+        case TryImpl.Failure(e) => TryImpl.Failure(e)
+
+@main def main(): Unit = 
   import Ex6TryModel.*
 
   val result = for 

@@ -1,6 +1,10 @@
 package u04lab
-import u03.Sequences.* 
+import u03.Sequences.*
 import Sequence.*
+import u03.extensionmethods.Optionals.*
+import Optional.*
+
+import scala.annotation.tailrec
 
 /*  Exercise 5: 
  *  - Generalise by ad-hoc polymorphism logAll, such that:
@@ -23,4 +27,32 @@ object Ex5Traversable:
     case Cons(h, t) => log(h); logAll(t)
     case _ => ()
 
-  
+  trait Traversable[T[_]]:
+    extension [A](t: T[A]) def traverse(f: A => Unit): Unit
+
+  object TraversableSequence extends Traversable[Sequence]:
+    extension [A](s: Sequence[A]) @tailrec override def traverse(f: A => Unit): Unit = s match
+      case Cons(h, t) => f(h); t.traverse(f)
+      case _ => ()
+
+  object TraversableOptional extends Traversable[Optional]:
+    extension [A](o: Optional[A]) override def traverse(f: A => Unit): Unit = o match
+      case Just(a) => f(a)
+      case _ => ()
+
+import Ex5Traversable.log
+@main def main(): Unit =
+  {
+    import Ex5Traversable.TraversableSequence.*
+    println("Testing Traversable[Sequence]")
+    val s = Cons(1, Cons(2, Nil()))
+    s.traverse(log)
+    s.traverse(println)
+  }
+  {
+    import Ex5Traversable.TraversableOptional.*
+    println("Testing Traversable[Optional]")
+    val o = Just(1)
+    o.traverse(log)
+    o.traverse(println)
+  }
